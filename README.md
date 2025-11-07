@@ -3,6 +3,11 @@
   <img src="Neovim-mark.svg" alt="Neovim logo" width="200"/>
 </p>
 
+&lt;p align="center"&gt;
+  &lt;img src="nvkitstart-logo.svg" alt="NvKitstart logo" width="200"/&gt; &nbsp;&nbsp;&nbsp;
+  &lt;img src="Neovim-mark.svg" alt="Neovim logo" width="200"/&gt;
+&lt;/p&gt;
+
 # NvKitstart
 
 NvKitstart is a modern, object-oriented Neovim starter configuration written in Lua.  
@@ -22,13 +27,35 @@ It features modular plugin management via [lazy.nvim](https://github.com/folke/l
 
 ---
 
+## Plugin List
+
+The following plugins are included and managed automatically:
+
+- **[neovim/nvim-lspconfig](https://github.com/neovim/nvim-lspconfig)** - Native LSP configuration
+- **[saghen/blink.cmp](https://github.com/saghen/blink.cmp)** - Fast completion engine with snippet support
+- **[iamcco/markdown-preview.nvim](https://github.com/iamcco/markdown-preview.nvim)** - Live Markdown preview in browser
+- **[stevearc/conform.nvim](https://github.com/stevearc/conform.nvim)** - Lightweight formatting engine
+- **[mason-org/mason.nvim](https://github.com/mason-org/mason.nvim)** - LSP server and tool installer
+- **[nvim-treesitter/nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter)** - Advanced syntax highlighting and code parsing
+- **[stevearc/oil.nvim](https://github.com/stevearc/oil.nvim)** - Modern file explorer
+- **[mason-org/mason-lspconfig.nvim](https://github.com/mason-org/mason-lspconfig.nvim)** - Bridges mason.nvim with lspconfig
+- **[romgrk/barbar.nvim](https://github.com/romgrk/barbar.nvim)** - Buffer management with visual tabs
+- **[nvim-telescope/telescope.nvim](https://github.com/nvim-telescope/telescope.nvim)** - Fuzzy finder for files, grep, and more
+- **[folke/which-key.nvim](https://github.com/folke/which-key.nvim)** - Keymap discovery and helper
+- **[nvim-mini/mini.nvim](https://github.com/nvim-mini/mini.nvim)** - Collection of small, focused plugins (icons, statusline, indentscope)
+- **[folke/noice.nvim](https://github.com/folke/noice.nvim)** - Enhanced UI for messages, cmdline, and popupmenu
+- **[zaldih/themery.nvim](https://github.com/zaldih/themery.nvim)** - Theme switcher UI
+- **[folke/tokyonight.nvim](https://github.com/folke/tokyonight.nvim)** - Beautiful Tokyo Night colorscheme
+
+---
+
 ## Getting Started
 
 1. **Requirements**
     - [Neovim](https://neovim.io/) 0.9 or newer
     - [git](https://git-scm.com/)
     - [ripgrep](https://github.com/BurntSushi/ripgrep)
-    - [node](https://nodejs.org/en)(Optional, for [markdown-preview.nvim](https://github.com/iamcco/markdown-preview.nvim) plguin.)
+    - [node](https://nodejs.org/en) (Optional, for [markdown-preview.nvim](https://github.com/iamcco/markdown-preview.nvim) plguin.)
 
 2. **Installation**
     - Copy `init.lua` into your Neovim config folder:
