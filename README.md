@@ -3,11 +3,6 @@
   <img src="Neovim-mark.svg" alt="Neovim logo" width="200"/>
 </p>
 
-&lt;p align="center"&gt;
-  &lt;img src="nvkitstart-logo.svg" alt="NvKitstart logo" width="200"/&gt; &nbsp;&nbsp;&nbsp;
-  &lt;img src="Neovim-mark.svg" alt="Neovim logo" width="200"/&gt;
-&lt;/p&gt;
-
 # NvKitstart
 
 NvKitstart is a modern, object-oriented Neovim starter configuration written in Lua.  
@@ -67,24 +62,102 @@ The following plugins are included and managed automatically:
     - NvKitstart will automatically install [lazy.nvim](https://github.com/folke/lazy.nvim) if it is missing.
     - All included plugins and LSP servers will be managed for you.
 
+4. **Managing LSP Servers**
+    The configuration includes `mason.nvim` and `mason-lspconfig.nvim` for easy LSP server management:
+    - To install a language server: `:LspInstall <server_name>`
+      - Examples: `:LspInstall pyright` (Python), `:LspInstall tsserver` (TypeScript/JavaScript)
+    - To view all available servers: `:Mason`
+    - Servers configured to install automatically: `lua_ls`, `rust_analyzer`, `clangd`
+
+---
+
+## Keymaps
+
+NvKitstart comes with predefined keymaps using the `<leader>` key (set to Space):
+
+### General
+- **`<leader>?`** - Show buffer-local keymaps (which-key)
+
+### Telescope (File Operations)
+- **`<leader>ff`** - Find files
+- **`<leader>fg`** - Live grep
+- **`<leader>fb`** - Buffers
+- **`<leader>fh`** - Help tags
+- **`<leader>fd`** - Diagnostics
+- **`<leader>ft`** - Telescope main menu
+
+### Barbar (Buffer Management)
+- **`<leader>b,`** / **`<leader>b.`** - Previous/Next buffer
+- **`<leader>b1-9`** - Go to buffer 1-9
+- **`<leader>b0`** - Go to last buffer
+- **`<leader>bc`** - Close buffer
+- **`<leader>bw`** - Wipeout buffer
+- **`<leader>bp`** - Pin/unpin buffer
+- **`<leader>bP`** - Magic buffer pick mode
+
+### File Explorer & Themes
+- **`<leader>fo`** - Open Oil file explorer
+- **`<leader>ft`** - Open Themery theme selector
+
+> **Note**: All keymaps can be customized by editing `InitWhichKeyMappings()` in `init.lua`.
+
+---
+
+## Configuration
+
+### LSP & Completion
+- LSP is configured via `nvim-lspconfig` with `mason.nvim` for automatic server management
+- Autocompletion powered by `blink.cmp` with LSP, path, snippets, and buffer sources
+- Diagnostics appear as floating windows on hover (no virtual text)
+
+### Formatting
+- `conform.nvim` handles formatting with `:Format` command
+- Currently configured for Lua (stylua) - extend `formatters_by_ft` for other languages
+- Auto-formats on save by default
+
+### Treesitter
+- Ensures installed: `c`, `cpp`, `java`, `javascript`, `html`, `css`, `typescript`, `lua`, `vim`, `markdown`
+- Automatic installation enabled
+
+### Appearance
+- Theme switcher: `:Themery` or `<leader>ft`
+- Pre-configured themes: Tokyo Night (Moon, Storm, Night, Day)
+- Icons in ASCII style for compatibility
+
 ---
 
 ## Customization
 
 - **Add/Remove Plugins:**  
-  See the `setup_plugins()` method in `init.lua` for plugin specs.  
-  Add a new plugin by appending its spec table to the list.
+  Edit the `setup_plugins()` method in `init.lua` to modify plugin specs.
 
 - **Change Options:**  
   Edit the `set_options()` method to change editor settings.
 
 - **Add Keymaps:**  
-  Add keymaps to the relevant plugin spec or by extending the config class.
+  Add keymaps by extending `InitWhichKeyLocalMappings()` or `InitWhichKeyBarbarMappings()`.
 
 - **Diagnostics & More:**  
   Extend `setup_diagnostics()` for custom diagnostics.
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for more details on customizing and contributing.
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed guidelines.
+
+---
+
+## Troubleshooting
+
+### Plugin installation fails
+- Ensure `git` is installed and accessible
+- Delete `~/.local/share/nvim/lazy` and restart Neovim
+
+### LSP server not working
+- Run `:LspInfo` to check LSP status
+- Install missing servers via `:Mason`
+- Check `:checkhealth vim.lsp` for LSP health
+
+### Colorscheme not loading
+- Run `:Themery` to select a theme
+- Ensure `tokyonight.nvim` is installed (should be automatic)
 
 ---
 
@@ -114,7 +187,6 @@ MIT License. See [LICENSE](./LICENSE).
 ![1](screenshots/1.png)
 
 ---
-
 ## Questions?
 
 Open an [issue](https://github.com/BillyBoyMF/NvKitstart/issues) or start a discussion!
