@@ -27,6 +27,8 @@ It features modular plugin management via [lazy.nvim](https://github.com/folke/l
 1. **Requirements**
     - [Neovim](https://neovim.io/) 0.9 or newer
     - [git](https://git-scm.com/)
+    - [ripgrep](https://github.com/BurntSushi/ripgrep)
+    - [node](https://nodejs.org/en)(Optional, for [markdown-preview.nvim](https://github.com/iamcco/markdown-preview.nvim) plguin.)
 
 2. **Installation**
     - Copy `init.lua` into your Neovim config folder:
