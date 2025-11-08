@@ -32,7 +32,7 @@ function NvConfig:bootstrap_lazy()
 		if vim.v.shell_error ~= 0 then
 			vim.api.nvim_echo({
 				{ "Failed to clone lazy.nvim:\n", "ErrorMsg" },
-				{ out, "WarningMsg" },
+				{ out,                            "WarningMsg" },
 				{ "\nPress any key to exit..." },
 			}, true, {})
 			vim.fn.getchar()
@@ -93,25 +93,26 @@ function NvConfig:setup_plugins()
 							if client.workspace_folders then
 								local path = client.workspace_folders[1].name
 								if
-									path ~= vim.fn.stdpath("config")
-									and (
-										vim.uv.fs_stat(path .. "/.luarc.json")
-										or vim.uv.fs_stat(path .. "/.luarc.jsonc")
-									)
+								    path ~= vim.fn.stdpath("config")
+								    and (
+									    vim.uv.fs_stat(path .. "/.luarc.json")
+									    or vim.uv.fs_stat(path .. "/.luarc.jsonc")
+								    )
 								then
 									return
 								end
 							end
-							client.config.settings.Lua = vim.tbl_deep_extend("force", client.config.settings.Lua, {
-								runtime = {
-									version = "LuaJIT",
-									path = { "lua/?.lua", "lua/?/init.lua" },
-								},
-								workspace = {
-									checkThirdParty = false,
-									library = { vim.env.VIMRUNTIME },
-								},
-							})
+							client.config.settings.Lua = vim.tbl_deep_extend("force",
+								client.config.settings.Lua, {
+									runtime = {
+										version = "LuaJIT",
+										path = { "lua/?.lua", "lua/?/init.lua" },
+									},
+									workspace = {
+										checkThirdParty = false,
+										library = { vim.env.VIMRUNTIME },
+									},
+								})
 						end,
 						settings = { Lua = {} },
 					})
@@ -134,17 +135,25 @@ function NvConfig:setup_plugins()
 									components = {
 										kind_icon = {
 											text = function(ctx)
-												local kind_icon, _, _ = require("mini.icons").get("lsp", ctx.kind)
+												local kind_icon, _, _ =
+												    require("mini.icons")
+												    .get("lsp", ctx.kind)
 												return kind_icon
 											end,
 											highlight = function(ctx)
-												local _, hl, _ = require("mini.icons").get("lsp", ctx.kind)
+												local _, hl, _ = require(
+													    "mini.icons")
+												    .get("lsp",
+													    ctx.kind)
 												return hl
 											end,
 										},
 										kind = {
 											highlight = function(ctx)
-												local _, hl, _ = require("mini.icons").get("lsp", ctx.kind)
+												local _, hl, _ = require(
+													    "mini.icons")
+												    .get("lsp",
+													    ctx.kind)
 												return hl
 											end,
 										},
@@ -157,7 +166,8 @@ function NvConfig:setup_plugins()
 					})
 					local capabilities = vim.lsp.protocol.make_client_capabilities()
 					capabilities =
-						vim.tbl_deep_extend("force", capabilities, require("blink.cmp").get_lsp_capabilities({}, false))
+					    vim.tbl_deep_extend("force", capabilities,
+						    require("blink.cmp").get_lsp_capabilities({}, false))
 					capabilities = vim.tbl_deep_extend("force", capabilities, {
 						textDocument = {
 							foldingRange = {
@@ -180,20 +190,41 @@ function NvConfig:setup_plugins()
 			{
 				"stevearc/conform.nvim",
 				config = function()
-					require("conform").setup({ formatters_by_ft = { lua = { "stylua" } } })
-					vim.api.nvim_create_autocmd("BufWritePre", {
-						pattern = "*",
-						callback = function(args)
-							require("conform").format({ bufnr = args.buf })
-						end,
+					local conform = require("conform")
+					conform.setup({
+						formatters_by_ft = {
+							lua = { "stylua" },
+							javascript = { "prettier" },
+							typescript = { "prettier" },
+							json = { "prettier" },
+							html = { "prettier" },
+							css = { "prettier" },
+							markdown = { "prettier" },
+							python = { "black" },
+							c = { "clang_format" },
+							cpp = { "clang_format" },
+						},
+						format_on_save = {
+							timeout_ms = 500,
+							lsp_fallback = true,
+						},
 					})
+
 					vim.api.nvim_create_user_command("Format", function(args)
 						local range = nil
 						if args.count ~= -1 then
-							local end_line = vim.api.nvim_buf_get_lines(0, args.line2 - 1, args.line2, true)[1]
-							range = { start = { args.line1, 0 }, ["end"] = { args.line2, end_line:len() } }
+							local end_line = vim.api.nvim_buf_get_lines(0, args.line2 - 1,
+								args.line2, true)[1]
+							range = {
+								start = { args.line1, 0 },
+								["end"] = { args.line2, end_line:len() },
+							}
 						end
-						require("conform").format({ async = true, lsp_format = "fallback", range = range })
+						conform.format({
+							async = true,
+							lsp_format = "fallback",
+							range = range,
+						})
 					end, { range = true })
 				end,
 			},
@@ -234,6 +265,27 @@ function NvConfig:setup_plugins()
 				"stevearc/oil.nvim",
 				opts = {},
 				lazy = false,
+				config = function()
+					require("oil").setup({
+						-- Essential configuration options
+						default_file_explorer = true,
+						view_options = {
+							show_hidden = true, -- Set to true to see hidden files
+						},
+					})
+					vim.api.nvim_create_autocmd("VimEnter", {
+						pattern = "*",
+						callback = function(args)
+							-- Проверяем, что Neovim запущен без аргументов файла
+							if vim.fn.argc() == 0 then
+								-- Небольшая задержка для гарантии загрузки всех компонентов
+								vim.defer_fn(function()
+									require("oil").open()
+								end, 10)
+							end
+						end,
+					})
+				end,
 			},
 			{
 				"mason-org/mason-lspconfig.nvim",
@@ -278,23 +330,11 @@ function NvConfig:setup_plugins()
 			{
 				"nvim-mini/mini.nvim",
 				version = false,
-				dependencies = {
-					{
-						"nvim-mini/mini.indentscope",
-						version = false,
-						config = function()
-							require("mini.indentscope").setup()
-						end,
-					},
-					{
-						"nvim-mini/mini.statusline",
-						version = false,
-						config = function()
-							require("mini.statusline").setup({ use_icons = false })
-						end,
-					},
-					{ "nvim-mini/mini.icons", version = false, opts = { style = "ascii" } },
-				},
+				config = function()
+					require("mini.indentscope").setup()
+					require("mini.statusline").setup({ use_icons = false })
+					require("mini.icons").setup({ style = "ascii" })
+				end
 			},
 			{
 				"folke/noice.nvim",
@@ -326,10 +366,10 @@ function NvConfig:setup_plugins()
 				config = function()
 					require("themery").setup({
 						themes = {
-							{ name = "Tokyo Night Moon", colorscheme = "tokyonight-moon" },
+							{ name = "Tokyo Night Moon",  colorscheme = "tokyonight-moon" },
 							{ name = "Tokyo Night Storm", colorscheme = "tokyonight-storm" },
 							{ name = "Tokyo Night Night", colorscheme = "tokyonight-night" },
-							{ name = "Tokyo Night Day", colorscheme = "tokyonight-day" },
+							{ name = "Tokyo Night Day",   colorscheme = "tokyonight-day" },
 						},
 						livePreview = true,
 					})
@@ -379,14 +419,14 @@ end
 -- Initializes Telescope plugin's mappings
 function NvConfig:InitWhichKeyLocalMappings()
 	require("which-key").add({
-		{ "<leader>f", group = "Local mappings" },
+		{ "<leader>f",  group = "Local mappings" },
 		{
 			"<leader>fd",
 			"<cmd>Telescope diagnostics<cr>",
 			desc = "Telescope diagnostics",
 			mode = "ni",
 		},
-		{ "<leader>ft", "<cmd>Telescope<cr>", desc = "Telescope", mode = "ni" },
+		{ "<leader>ft", "<cmd>Telescope<cr>",    desc = "Telescope", mode = "ni" },
 		{
 			"<leader>ff",
 			"<cmd>Telescope find_files<cr>",
@@ -399,37 +439,37 @@ function NvConfig:InitWhichKeyLocalMappings()
 			desc = "Telescope live grep",
 			mode = "ni",
 		},
-		{ "<leader>fb", "<cmd>Telescope buffers<cr>", desc = "Telescope buffers", mode = "ni" },
+		{ "<leader>fb", "<cmd>Telescope buffers<cr>", desc = "Telescope buffers",     mode = "ni" },
 		{
 			"<leader>fh",
 			"<cmd>Telescope help_tags<cr>",
 			desc = "Telescope help tags",
 			mode = "ni",
 		},
-		{ "<leader>fo", "<cmd>Oil<cr>", desc = "Opens a file explorer", mode = "ni" },
-		{ "<leader>ft", "<cmd>Themery<cr>", desc = "Pick a coloroscheme!", mode = "ni" },
+		{ "<leader>fo", "<cmd>Oil<cr>",               desc = "Opens a file explorer", mode = "ni" },
+		{ "<leader>ft", "<cmd>Themery<cr>",           desc = "Pick a coloroscheme!",  mode = "ni" },
 	})
 end
 
 -- Initializes barbar.nvim plugin's mappings
 function NvConfig:InitWhichKeyBarbarMappings()
 	require("which-key").add({
-		{ "<leader>b,", "<cmd>BufferPrevious<cr>", desc = "Previous buffer", mode = "ni", group = "barbar" },
-		{ "<leader>b.", "<cmd>BufferNext<cr>", desc = "Next buffer", mode = "ni", group = "barbar" },
-		{ "<leader>b<", "<cmd>BufferMovePrevious<cr>", desc = "Move buffer left", mode = "ni", group = "barbar" },
-		{ "<leader>b>", "<cmd>BufferMoveNext<cr>", desc = "Move buffer right", mode = "ni", group = "barbar" },
-		{ "<leader>b1", "<cmd>BufferGoto 1<cr>", desc = "Go to buffer 1", mode = "ni", group = "barbar" },
-		{ "<leader>b2", "<cmd>BufferGoto 2<cr>", desc = "Go to buffer 2", mode = "ni", group = "barbar" },
-		{ "<leader>b3", "<cmd>BufferGoto 3<cr>", desc = "Go to buffer 3", mode = "ni", group = "barbar" },
-		{ "<leader>b4", "<cmd>BufferGoto 4<cr>", desc = "Go to buffer 4", mode = "ni", group = "barbar" },
-		{ "<leader>b5", "<cmd>BufferGoto 5<cr>", desc = "Go to buffer 5", mode = "ni", group = "barbar" },
-		{ "<leader>b6", "<cmd>BufferGoto 6<cr>", desc = "Go to buffer 6", mode = "ni", group = "barbar" },
-		{ "<leader>b7", "<cmd>BufferGoto 7<cr>", desc = "Go to buffer 7", mode = "ni", group = "barbar" },
-		{ "<leader>b8", "<cmd>BufferGoto 8<cr>", desc = "Go to buffer 8", mode = "ni", group = "barbar" },
-		{ "<leader>b9", "<cmd>BufferGoto 9<cr>", desc = "Go to buffer 9", mode = "ni", group = "barbar" },
-		{ "<leader>b0", "<cmd>BufferLast<cr>", desc = "Go to last buffer", mode = "ni", group = "barbar" },
-		{ "<leader>bp", "<cmd>BufferPin<cr>", desc = "Pin/unpin buffer", mode = "ni", group = "barbar" },
-		{ "<leader>bgp", "<cmd>BufferGotoPinned<cr>", desc = "Go to pinned buffer", mode = "ni", group = "barbar" },
+		{ "<leader>b,",  "<cmd>BufferPrevious<cr>",     desc = "Previous buffer",     mode = "ni", group = "barbar" },
+		{ "<leader>b.",  "<cmd>BufferNext<cr>",         desc = "Next buffer",         mode = "ni", group = "barbar" },
+		{ "<leader>b<",  "<cmd>BufferMovePrevious<cr>", desc = "Move buffer left",    mode = "ni", group = "barbar" },
+		{ "<leader>b>",  "<cmd>BufferMoveNext<cr>",     desc = "Move buffer right",   mode = "ni", group = "barbar" },
+		{ "<leader>b1",  "<cmd>BufferGoto 1<cr>",       desc = "Go to buffer 1",      mode = "ni", group = "barbar" },
+		{ "<leader>b2",  "<cmd>BufferGoto 2<cr>",       desc = "Go to buffer 2",      mode = "ni", group = "barbar" },
+		{ "<leader>b3",  "<cmd>BufferGoto 3<cr>",       desc = "Go to buffer 3",      mode = "ni", group = "barbar" },
+		{ "<leader>b4",  "<cmd>BufferGoto 4<cr>",       desc = "Go to buffer 4",      mode = "ni", group = "barbar" },
+		{ "<leader>b5",  "<cmd>BufferGoto 5<cr>",       desc = "Go to buffer 5",      mode = "ni", group = "barbar" },
+		{ "<leader>b6",  "<cmd>BufferGoto 6<cr>",       desc = "Go to buffer 6",      mode = "ni", group = "barbar" },
+		{ "<leader>b7",  "<cmd>BufferGoto 7<cr>",       desc = "Go to buffer 7",      mode = "ni", group = "barbar" },
+		{ "<leader>b8",  "<cmd>BufferGoto 8<cr>",       desc = "Go to buffer 8",      mode = "ni", group = "barbar" },
+		{ "<leader>b9",  "<cmd>BufferGoto 9<cr>",       desc = "Go to buffer 9",      mode = "ni", group = "barbar" },
+		{ "<leader>b0",  "<cmd>BufferLast<cr>",         desc = "Go to last buffer",   mode = "ni", group = "barbar" },
+		{ "<leader>bp",  "<cmd>BufferPin<cr>",          desc = "Pin/unpin buffer",    mode = "ni", group = "barbar" },
+		{ "<leader>bgp", "<cmd>BufferGotoPinned<cr>",   desc = "Go to pinned buffer", mode = "ni", group = "barbar" },
 		{
 			"<leader>bgu",
 			"<cmd>BufferGotoUnpinned<cr>",
@@ -437,7 +477,7 @@ function NvConfig:InitWhichKeyBarbarMappings()
 			mode = "ni",
 			group = "barbar",
 		},
-		{ "<leader>bc", "<cmd>BufferClose<cr>", desc = "Close buffer", mode = "ni", group = "barbar" },
+		{ "<leader>bc", "<cmd>BufferClose<cr>",   desc = "Close buffer",   mode = "ni", group = "barbar" },
 		{ "<leader>bw", "<cmd>BufferWipeout<cr>", desc = "Wipeout buffer", mode = "ni", group = "barbar" },
 		{
 			"<leader>baa",
@@ -474,7 +514,7 @@ function NvConfig:InitWhichKeyBarbarMappings()
 			mode = "ni",
 			group = "barbar",
 		},
-		{ "<leader>bP", "<cmd>BufferPick<cr>", desc = "Magic buffer pick mode", mode = "ni", group = "barbar" },
+		{ "<leader>bP",  "<cmd>BufferPick<cr>",        desc = "Magic buffer pick mode", mode = "ni", group = "barbar" },
 		{
 			"<leader>bPD",
 			"<cmd>BufferPickDelete<cr>",
@@ -489,7 +529,7 @@ function NvConfig:InitWhichKeyBarbarMappings()
 			mode = "ni",
 			group = "barbar",
 		},
-		{ "<leader>bon", "<cmd>BufferOrderByName<cr>", desc = "Order by name", mode = "ni", group = "barbar" },
+		{ "<leader>bon", "<cmd>BufferOrderByName<cr>", desc = "Order by name",          mode = "ni", group = "barbar" },
 		{
 			"<leader>bod",
 			"<cmd>BufferOrderByDirectory<cr>",
@@ -505,8 +545,8 @@ function NvConfig:InitWhichKeyBarbarMappings()
 			mode = "ni",
 			group = "barbar",
 		},
-		{ "<leader>be", "<cmd>BarbarEnable<cr>", desc = "Enable Barbar", mode = "ni", group = "barbar" },
-		{ "<leader>bd", "<cmd>BarbarDisable<cr>", desc = "Disable Barbar", mode = "ni", group = "barbar" },
+		{ "<leader>be",  "<cmd>BarbarEnable<cr>",          desc = "Enable Barbar",     mode = "ni", group = "barbar" },
+		{ "<leader>bd",  "<cmd>BarbarDisable<cr>",         desc = "Disable Barbar",    mode = "ni", group = "barbar" },
 	})
 end
 
