@@ -1,6 +1,5 @@
 <p align="center">
-  <img src="nvkitstart-logo.svg" alt="NvKitstart logo" width="200"/> &nbsp;&nbsp;&nbsp;
-  <img src="Neovim-mark.svg" alt="Neovim logo" width="200"/>
+  <img src="logo.png" alt="NvKitstart logo" width="200"/>
 </p>
 
 # NvKitstart
